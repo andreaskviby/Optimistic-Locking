@@ -12,6 +12,11 @@
             "name": "Package Developer",
             "email": "developer@example.com",
             "role": "Developer"
+        },
+        {
+            "name": "Andreas Kviby",
+            "homepage": "https://github.com/andreaskviby",
+            "role": "Developer"
         }
     ],
     "require": {
