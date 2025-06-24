@@ -2,11 +2,11 @@
 
 namespace Stafe\OptimisticLocking;
 
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\DB;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 use Stafe\OptimisticLocking\Commands\LockCommand;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Facades\DB;
 
 class OptimisticLockingServiceProvider extends PackageServiceProvider
 {
