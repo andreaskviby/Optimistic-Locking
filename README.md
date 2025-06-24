@@ -1,69 +1,83 @@
-# :package_description
+![Optimistic Locking](A58353EE-F4C4-41D8-83F3-BD5BA9EED5AB.png)
 
-[![Latest Version on Packagist](https://img.shields.io/packagist/v/:vendor_slug/:package_slug.svg?style=flat-square)](https://packagist.org/packages/:vendor_slug/:package_slug)
-[![GitHub Tests Action Status](https://img.shields.io/github/actions/workflow/status/:vendor_slug/:package_slug/run-tests.yml?branch=main&label=tests&style=flat-square)](https://github.com/:vendor_slug/:package_slug/actions?query=workflow%3Arun-tests+branch%3Amain)
-[![GitHub Code Style Action Status](https://img.shields.io/github/actions/workflow/status/:vendor_slug/:package_slug/fix-php-code-style-issues.yml?branch=main&label=code%20style&style=flat-square)](https://github.com/:vendor_slug/:package_slug/actions?query=workflow%3A"Fix+PHP+code+style+issues"+branch%3Amain)
-[![Total Downloads](https://img.shields.io/packagist/dt/:vendor_slug/:package_slug.svg?style=flat-square)](https://packagist.org/packages/:vendor_slug/:package_slug)
-<!--delete-->
----
-This repo can be used to scaffold a Laravel package. Follow these steps to get started:
+# Optimistic Locking
 
-1. Press the "Use this template" button at the top of this repo to create a new repo with the contents of this skeleton.
-2. Run "php ./configure.php" to run a script that will replace all placeholders throughout all the files.
-3. Have fun creating your package.
-4. If you need help creating a package, consider picking up our <a href="https://laravelpackage.training">Laravel Package Training</a> video course.
----
-<!--/delete-->
-This is where your description should go. Limit it to a paragraph or two. Consider adding a small example.
+Utilities for implementing optimistic locking in Laravel Eloquent models.
 
-## Support us
+## Features
 
-[<img src="https://github-ads.s3.eu-central-1.amazonaws.com/:package_name.jpg?t=1" width="419px" />](https://spatie.be/github-ad-click/:package_name)
+- `OptimisticLocking` trait increments a version column every time a model is updated.
+- `StaleModelException` is thrown when an outdated model instance is saved and exposes the changed values via `diff()`.
+- Artisan command `schema:lock --apply` adds the locking column to tables under `app/Models`.
+- Fully configurable column name, start value and diff length.
 
-We invest a lot of resources into creating [best in class open source packages](https://spatie.be/open-source). You can support us by [buying one of our paid products](https://spatie.be/open-source/support-us).
+## Requirements
 
-We highly appreciate you sending us a postcard from your hometown, mentioning which of our package(s) you are using. You'll find our address on [our contact page](https://spatie.be/about-us). We publish all received postcards on [our virtual postcard wall](https://spatie.be/open-source/postcards).
+- PHP 8.1+
+- Laravel 10, 11 or 12
 
 ## Installation
 
-You can install the package via composer:
+Install the package via composer:
 
 ```bash
-composer require :vendor_slug/:package_slug
+composer require stafe/optimistic-locking
 ```
 
-You can publish and run the migrations with:
+Publish the configuration file to customise the column name or initial value:
 
 ```bash
-php artisan vendor:publish --tag=":package_slug-migrations"
-php artisan migrate
+php artisan vendor:publish --tag="optimistic-locking-config"
 ```
 
-You can publish the config file with:
+Add a locking column to your tables. Either run the command that scans your models:
 
 ```bash
-php artisan vendor:publish --tag=":package_slug-config"
+php artisan schema:lock --apply
 ```
 
-This is the contents of the published config file:
+or add the column manually in your migrations:
 
 ```php
-return [
-];
-```
-
-Optionally, you can publish the views using
-
-```bash
-php artisan vendor:publish --tag=":package_slug-views"
+$table->unsignedInteger('lock_version')->nullable();
 ```
 
 ## Usage
 
+Apply the trait to any model that needs optimistic locking:
+
 ```php
-$variable = new VendorName\Skeleton();
-echo $variable->echoPhrase('Hello, VendorName!');
+use Stafe\OptimisticLocking\Traits\OptimisticLocking;
+
+class Post extends Model
+{
+    use OptimisticLocking;
+}
 ```
+
+When a stale model instance is saved the package throws a `StaleModelException`:
+
+```php
+try {
+    $post->save();
+} catch (Stafe\OptimisticLocking\StaleModelException $e) {
+    logger()->warning('Stale update', $e->diff());
+}
+```
+
+## Configuration
+
+The published configuration file looks like this:
+
+```php
+return [
+    'column' => 'lock_version',
+    'start_value' => 1,
+    'diff_max_len' => 250,
+];
+```
+
+Adjust these options to match your application.
 
 ## Testing
 
@@ -73,21 +87,17 @@ composer test
 
 ## Changelog
 
-Please see [CHANGELOG](CHANGELOG.md) for more information on what has changed recently.
+See [CHANGELOG](CHANGELOG.md) for a record of changes.
 
 ## Contributing
 
-Please see [CONTRIBUTING](CONTRIBUTING.md) for details.
+Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
-## Security Vulnerabilities
+## Security
 
-Please review [our security policy](../../security/policy) on how to report security vulnerabilities.
-
-## Credits
-
-- [:author_name](https://github.com/:author_username)
-- [All Contributors](../../contributors)
+If you discover a security vulnerability, please contact the maintainer at developer@example.com.
 
 ## License
 
-The MIT License (MIT). Please see [License File](LICENSE.md) for more information.
+The MIT License. See [LICENSE.md](LICENSE.md) for details.
+
