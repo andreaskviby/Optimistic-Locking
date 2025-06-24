@@ -21,7 +21,7 @@ Utilities for implementing optimistic locking in Laravel Eloquent models.
 Install the package via composer:
 
 ```bash
-composer require stafe/optimistic-locking
+composer require andreaskviby/optimistic-locking
 ```
 
 Publish the configuration file to customise the column name or initial value:
@@ -92,6 +92,12 @@ See [CHANGELOG](CHANGELOG.md) for a record of changes.
 ## Contributing
 
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
+
+We are actively looking for issues, pull requests and contributors.
+
+## Developer
+
+The project is developed by [Andreas Kviby](https://github.com/andreaskviby).
 
 ## Security
 
