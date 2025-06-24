@@ -24,3 +24,13 @@ it('throws exception on stale update', function () {
         $second->save();
     })->toThrow(StaleModelException::class);
 });
+
+it('increments version on mass update', function () {
+    $postA = Post::create(['title' => 'A']);
+    $postB = Post::create(['title' => 'B']);
+
+    Post::query()->updateAndIncrementLock(['title' => 'C']);
+
+    expect(Post::find($postA->id)->lock_version)->toBe(2);
+    expect(Post::find($postB->id)->lock_version)->toBe(2);
+});

@@ -10,6 +10,7 @@ Utilities for implementing optimistic locking in Laravel Eloquent models.
 - `StaleModelException` is thrown when an outdated model instance is saved and exposes the changed values via `diff()`.
 - Artisan command `schema:lock --apply` adds the locking column to tables under `app/Models`.
 - Fully configurable column name, start value and diff length.
+- `updateAndIncrementLock()` builder macro enables mass updates while keeping versions in sync.
 
 ## Requirements
 
@@ -63,6 +64,12 @@ try {
 } catch (Stafe\OptimisticLocking\StaleModelException $e) {
     logger()->warning('Stale update', $e->diff());
 }
+```
+
+For mass updates you can use the `updateAndIncrementLock()` macro:
+
+```php
+Post::query()->where('published', false)->updateAndIncrementLock(['published' => true]);
 ```
 
 ## Configuration
